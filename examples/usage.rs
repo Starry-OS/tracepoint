@@ -1,5 +1,3 @@
-#![feature(asm_goto)]
-
 use spin::Mutex;
 use tracepoint::{
     TraceCmdLineCache, TraceEntryParser, TracePipeOps, TracePointMap, global_init_events,

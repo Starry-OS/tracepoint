@@ -1,3 +1,12 @@
+//! A Rust library for defining and managing tracepoints in a no_std environment.
+//! It provides macros and structures to create tracepoints, manage their state,
+//! and handle trace events efficiently.
+//! The library is designed to be lightweight and suitable for embedded systems or
+//! kernel-level programming where the standard library is not available.
+//! It leverages Rust's powerful macro system to simplify the creation and management of tracepoints.
+//! The macros provided by this library allow for easy insertion of tracepoints into code with minimal overhead.
+//!
+#![deny(missing_docs)]
 #![no_std]
 #![allow(clippy::new_without_default)]
 extern crate alloc;
@@ -42,6 +51,7 @@ pub trait KernelTraceOps {
     fn trace_cmdline_push(pid: u32);
 }
 
+/// TracePointMap is a mapping from tracepoint IDs to TracePoint references.
 #[derive(Debug)]
 pub struct TracePointMap<L: RawMutex + 'static>(BTreeMap<u32, &'static TracePoint<L>>);
 
@@ -66,6 +76,7 @@ impl<L: RawMutex + 'static> DerefMut for TracePointMap<L> {
     }
 }
 
+/// TracingEventsManager manages tracing events, subsystems, and tracepoints.
 #[derive(Debug)]
 pub struct TracingEventsManager<L: RawMutex + 'static> {
     subsystems: Mutex<L, BTreeMap<String, Arc<EventsSubsystem<L>>>>,
@@ -113,16 +124,15 @@ impl<L: RawMutex + 'static> TracingEventsManager<L> {
 
     /// Get all subsystems
     pub fn subsystem_names(&self) -> Vec<String> {
-        let res = self
-            .subsystems
+        self.subsystems
             .lock()
             .keys()
             .cloned()
-            .collect::<Vec<String>>();
-        res
+            .collect::<Vec<String>>()
     }
 }
 
+/// EventsSubsystem represents a collection of events under a specific subsystem.
 #[derive(Debug)]
 pub struct EventsSubsystem<L: RawMutex + 'static> {
     events: Mutex<L, BTreeMap<String, Arc<EventInfo<L>>>>,
@@ -149,10 +159,11 @@ impl<L: RawMutex + 'static> EventsSubsystem<L> {
 
     /// Get all events in the subsystem
     pub fn event_names(&self) -> Vec<String> {
-        let res = self.events.lock().keys().cloned().collect::<Vec<String>>();
-        res
+        self.events.lock().keys().cloned().collect::<Vec<String>>()
     }
 }
+
+/// EventInfo holds information about a specific trace event.
 #[derive(Debug)]
 pub struct EventInfo<L: RawMutex + 'static> {
     enable: TracePointEnableFile<L>,
@@ -216,6 +227,7 @@ impl<L: RawMutex + 'static> TracePointFormatFile<L> {
     }
 }
 
+/// TracePointEnableFile provides a way to enable or disable the tracepoint.
 #[derive(Debug, Clone)]
 pub struct TracePointEnableFile<L: RawMutex + 'static> {
     tracepoint: &'static TracePoint<L>,
@@ -242,12 +254,13 @@ impl<L: RawMutex + 'static> TracePointEnableFile<L> {
             '1' => self.tracepoint.enable(),
             '0' => self.tracepoint.disable(),
             _ => {
-                log::warn!("Invalid value for tracepoint enable: {}", enable);
+                log::warn!("Invalid value for tracepoint enable: {enable}");
             }
         }
     }
 }
 
+/// TracePointEnableFile provides a way to enable or disable the tracepoint.
 #[derive(Debug, Clone)]
 pub struct TracePointIdFile<L: RawMutex + 'static> {
     tracepoint: &'static TracePoint<L>,
@@ -293,7 +306,7 @@ pub fn global_init_events<L: RawMutex + 'static>() -> Result<TracingEventsManage
             .cmp(b.trace_point.name())
             .then(a.trace_point.system().cmp(b.trace_point.system()))
     });
-    log::info!("tracepoint_data_len: {}", tracepoint_data_len);
+    log::info!("tracepoint_data_len: {tracepoint_data_len}");
 
     let mut tracepoint_map = events_manager.tracepoint_map();
     for tracepoint_meta in tracepoint_data {

@@ -4,6 +4,7 @@ use lock_api::RawMutex;
 
 use crate::{KernelTraceOps, TraceEntry, TracePointMap};
 
+/// A trait defining operations for a trace pipe buffer.
 pub trait TracePipeOps {
     /// Returns the first event in the trace pipe buffer without removing it.
     fn peek(&self) -> Option<&Vec<u8>>;
@@ -22,6 +23,7 @@ pub struct TracePipeRaw {
 }
 
 impl TracePipeRaw {
+    /// Create a new TracePipeRaw with the specified maximum number of records.
     pub const fn new(max_record: usize) -> Self {
         Self {
             max_record,
@@ -81,10 +83,12 @@ impl TracePipeOps for TracePipeRaw {
     }
 }
 
+/// A snapshot of the trace pipe buffer at a specific point in time.
 #[derive(Debug)]
 pub struct TracePipeSnapshot(Vec<Vec<u8>>);
 
 impl TracePipeSnapshot {
+    /// Create a new TracePipeSnapshot with the given event buffer.
     pub fn new(event_buf: Vec<Vec<u8>>) -> Self {
         Self(event_buf)
     }
@@ -131,13 +135,14 @@ impl TracePipeOps for TracePipeSnapshot {
 
 /// A cache for storing command line arguments for each trace point.
 ///
-/// See https://www.kernel.org/doc/Documentation/trace/ftrace.txt
+/// See <https://www.kernel.org/doc/Documentation/trace/ftrace.txt>
 pub struct TraceCmdLineCache {
     cmdline: Vec<(u32, [u8; 16])>,
     max_record: usize,
 }
 
 impl TraceCmdLineCache {
+    /// Create a new TraceCmdLineCache with the specified maximum number of records.
     pub const fn new(max_record: usize) -> Self {
         Self {
             cmdline: Vec::new(),
@@ -185,6 +190,7 @@ impl TraceCmdLineCache {
     }
 }
 
+/// A parser for trace entries that formats them into human-readable strings.
 pub struct TraceEntryParser;
 
 impl TraceEntryParser {

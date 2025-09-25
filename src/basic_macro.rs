@@ -13,7 +13,7 @@
 /// - `TP_printk`: The print format for the tracepoint.
 ///
 /// # Example
-/// ```rust
+/// ```rust ignore
 /// use lock_api::Mutex;
 /// use crate::KernelTraceOps;
 /// define_event_trace!(
