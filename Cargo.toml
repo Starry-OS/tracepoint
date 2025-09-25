@@ -1,0 +1,17 @@
+[package]
+name = "tracepoint"
+authors = ["Linfeng Chen <chenlinfeng25@outlook.com>"]
+version = "0.1.0"
+edition = "2024"
+homepage = "https://github.com/Starry-OS/tracepoint"
+repository = "https://github.com/Starry-OS/tracepoint"
+
+[dependencies]
+static-keys = "0.7"
+paste = "1.0"
+log = "0.4"
+lock_api = "0.4"
+
+[dev-dependencies]
+spin = "0.10"
+env_logger = "0.11"
