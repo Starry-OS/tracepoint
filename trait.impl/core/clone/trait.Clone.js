@@ -1,0 +1,9 @@
+(function() {
+    var implementors = Object.fromEntries([["tracepoint",[["impl&lt;L: <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> + RawMutex + 'static&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"tracepoint/struct.TracePointEnableFile.html\" title=\"struct tracepoint::TracePointEnableFile\">TracePointEnableFile</a>&lt;L&gt;"],["impl&lt;L: <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> + RawMutex + 'static&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"tracepoint/struct.TracePointFormatFile.html\" title=\"struct tracepoint::TracePointFormatFile\">TracePointFormatFile</a>&lt;L&gt;"],["impl&lt;L: <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> + RawMutex + 'static&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"struct\" href=\"tracepoint/struct.TracePointIdFile.html\" title=\"struct tracepoint::TracePointIdFile\">TracePointIdFile</a>&lt;L&gt;"]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[1417]}
