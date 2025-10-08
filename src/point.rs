@@ -2,7 +2,9 @@ use alloc::{boxed::Box, collections::BTreeMap, format, string::String};
 use core::{any::Any, sync::atomic::AtomicU32};
 
 use lock_api::{Mutex, RawMutex};
-use static_keys::StaticFalseKey;
+use static_keys::RawStaticFalseKey;
+
+use crate::{KernelCodeManipulator, KernelTraceOps};
 
 /// A trace entry structure that holds metadata about a trace event.
 #[derive(Debug)]
@@ -38,10 +40,10 @@ impl TraceEntry {
 }
 
 /// The TracePoint structure represents a tracepoint in the system.
-pub struct TracePoint<L: RawMutex + 'static> {
+pub struct TracePoint<L: RawMutex + 'static, K: KernelTraceOps + 'static> {
     name: &'static str,
     system: &'static str,
-    key: &'static StaticFalseKey,
+    key: &'static RawStaticFalseKey<KernelCodeManipulator<K>>,
     id: AtomicU32,
     callback: Mutex<L, BTreeMap<usize, TracePointFunc>>,
     raw_callback: Mutex<L, BTreeMap<usize, Box<dyn TracePointCallBackFunc>>>,
@@ -50,7 +52,7 @@ pub struct TracePoint<L: RawMutex + 'static> {
     flags: u8,
 }
 
-impl<L: RawMutex + 'static> core::fmt::Debug for TracePoint<L> {
+impl<L: RawMutex + 'static, K: KernelTraceOps + 'static> core::fmt::Debug for TracePoint<L, K> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("TracePoint")
             .field("name", &self.name)
@@ -64,9 +66,9 @@ impl<L: RawMutex + 'static> core::fmt::Debug for TracePoint<L> {
 /// CommonTracePointMeta holds metadata for a common tracepoint.
 #[derive(Debug)]
 #[repr(C)]
-pub struct CommonTracePointMeta<L: RawMutex + 'static> {
+pub struct CommonTracePointMeta<L: RawMutex + 'static, K: KernelTraceOps + 'static> {
     /// A reference to the tracepoint.
-    pub trace_point: &'static TracePoint<L>,
+    pub trace_point: &'static TracePoint<L, K>,
     /// The print function for the tracepoint.
     pub print_func: fn(),
 }
@@ -86,10 +88,10 @@ pub struct TracePointFunc {
     pub data: Box<dyn Any + Send + Sync>,
 }
 
-impl<L: RawMutex + 'static> TracePoint<L> {
+impl<L: RawMutex + 'static, K: KernelTraceOps + 'static> TracePoint<L, K> {
     /// Creates a new TracePoint instance.
     pub const fn new(
-        key: &'static StaticFalseKey,
+        key: &'static RawStaticFalseKey<KernelCodeManipulator<K>>,
         name: &'static str,
         system: &'static str,
         fmt_func: fn(&[u8]) -> String,
