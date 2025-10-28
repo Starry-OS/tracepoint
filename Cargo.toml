@@ -7,7 +7,7 @@ homepage = "https://github.com/Starry-OS/tracepoint"
 repository = "https://github.com/Starry-OS/tracepoint"
 
 [dependencies]
-static-keys = { git = "https://github.com/Godones/static-keys.git" }
+static-keys = "0.8.2"
 paste = "1.0"
 log = "0.4"
 lock_api = "0.4"

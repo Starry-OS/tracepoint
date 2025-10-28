@@ -13,6 +13,7 @@ extern crate alloc;
 
 mod basic_macro;
 mod point;
+mod ptr;
 mod trace_pipe;
 
 use alloc::{
@@ -27,13 +28,15 @@ use core::{
     ops::{Deref, DerefMut},
     sync::atomic::AtomicUsize,
 };
-use static_keys::code_manipulate::CodeManipulator;
 
 use lock_api::{Mutex, MutexGuard, RawMutex};
 pub use paste::paste;
 pub use point::{
-    CommonTracePointMeta, TraceEntry, TracePoint, TracePointCallBackFunc, TracePointFunc,
+    CommonTracePointMeta, RawTracePointCallBackFunc, TraceEntry, TracePoint,
+    TracePointCallBackFunc, TracePointFunc,
 };
+pub use ptr::AsU64;
+use static_keys::code_manipulate::CodeManipulator;
 pub use trace_pipe::{
     TraceCmdLineCache, TraceCmdLineCacheSnapshot, TraceEntryParser, TracePipeOps, TracePipeRaw,
     TracePipeSnapshot,
@@ -63,7 +66,7 @@ pub struct KernelCodeManipulator<T> {
 
 impl<T: KernelTraceOps> CodeManipulator for KernelCodeManipulator<T> {
     unsafe fn write_code<const L: usize>(addr: *mut core::ffi::c_void, data: &[u8; L]) {
-        log::debug!("Modifying kernel code at address: {:p}", addr);
+        log::debug!("Modifying kernel code at address: {addr:p}");
         T::write_kernel_text(addr, data);
     }
 }
@@ -261,7 +264,7 @@ impl<L: RawMutex + 'static, K: KernelTraceOps + 'static> TracePointEnableFile<L,
     ///
     /// Returns true if the tracepoint is enabled, false otherwise.
     pub fn read(&self) -> &'static str {
-        if self.tracepoint.is_enabled() {
+        if self.tracepoint.default_is_enabled() {
             "1\n"
         } else {
             "0\n"
@@ -270,8 +273,8 @@ impl<L: RawMutex + 'static, K: KernelTraceOps + 'static> TracePointEnableFile<L,
     /// Enable or disable the tracepoint
     pub fn write(&self, enable: char) {
         match enable {
-            '1' => self.tracepoint.enable(),
-            '0' => self.tracepoint.disable(),
+            '1' => self.tracepoint.enable_default(),
+            '0' => self.tracepoint.disable_default(),
             _ => {
                 log::warn!("Invalid value for tracepoint enable: {enable}");
             }
