@@ -1,5 +1,5 @@
 [package]
-name = "tracepoint"
+name = "ktracepoint"
 authors = ["Linfeng Chen <chenlinfeng25@outlook.com>"]
 version = "0.1.0"
 edition = "2024"
@@ -11,6 +11,7 @@ static-keys = "0.8.2"
 paste = "1.0"
 log = "0.4"
 lock_api = "0.4"
+tp-lexer = { git = "https://github.com/Starry-OS/tp-lexer", rev = "b6386cf" }
 
 [dev-dependencies]
 spin = "0.10"
