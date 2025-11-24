@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Define a tracepoint with the given parameters."><title>define_event_trace in ktracepoint - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="ktracepoint" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.0-nightly (c23ed3ef2 2025-11-23)" data-channel="nightly" data-search-js="search-680b2199.js" data-stringdex-js="stringdex-a3946164.js" data-settings-js="settings-c38705f0.js" ><script src="../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-a410ff4d.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">define_event_trace</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../ktracepoint/index.html">ktracepoint</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">define_<wbr>event_<wbr>trace</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#parameters" title="Parameters">Parameters</a></li><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate ktracepoint</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">ktracepoint</a></div><h1>Macro <span class="macro">define_<wbr>event_<wbr>trace</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/ktracepoint/basic_macro.rs.html#44-279">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! define_event_trace {
+    (
+        $name:ident,
+        TP_lock($lock:path),
+        TP_kops($kops:path),
+        TP_system($system:ident),
+        TP_PROTO($($arg:ident:$arg_type:ty),+ $(,)?),
+        TP_STRUCT__entry{$($entry:ident:$entry_type:ty),+ $(,)?},
+        TP_fast_assign{$($assign:ident:$value:expr),+ $(,)?},
+        TP_ident($tp_ident:ident),
+        TP_printk($fmt_expr: expr)
+    ) =&gt; { ... };
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Define a tracepoint with the given parameters.</p>
+<p>This macro generates a tracepoint with the specified name, arguments, entry structure, assignment logic, identifier, and print format.</p>
+<h2 id="parameters"><a class="doc-anchor" href="#parameters">§</a>Parameters</h2>
+<ul>
+<li><code>name</code>: The name of the tracepoint.</li>
+<li><code>TP_lock</code>: The lock type to use for the tracepoint.</li>
+<li><code>TP_kops</code>: The kernel trace operations type. <code>[crate::KernelTraceOps]</code> is expected to be implemented for this type.</li>
+<li><code>TP_system</code>: The subsystem or system to which the tracepoint belongs.</li>
+<li><code>TP_PROTO</code>: The prototype of the tracepoint function.</li>
+<li><code>TP_STRUCT__entry</code>: The structure of the tracepoint entry.
+<strong>WARN</strong>: User need to make sure the layout of the struct is compatible with C layout.</li>
+<li><code>TP_fast_assign</code>: The assignment logic for the tracepoint entry.</li>
+<li><code>TP_ident</code>: The identifier for the tracepoint entry.</li>
+<li><code>TP_printk</code>: The print format for the tracepoint.</li>
+</ul>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>lock_api::Mutex;
+<span class="kw">use </span><span class="kw">crate</span>::KernelTraceOps;
+<span class="macro">define_event_trace!</span>(
+    Mutex&lt;()&gt;,
+    Kops,
+    TEST2,
+    TP_PROTO(a: u32, b: u32),
+    TP_STRUCT__entry{
+          a: u32,
+          b: u32,
+    },
+    TP_fast_assign{
+          a:a,
+          b:{
+            <span class="comment">// do something with b
+            </span>b
+          }
+    },
+    TP_ident(__entry),
+    TP_printk({
+          <span class="comment">// do something with __entry
+          </span><span class="macro">format!</span>(<span class="string">"Hello from tracepoint! a={}, b={}"</span>, __entry.a, __entry.b)
+    })
+);</code></pre></div></div></details></section></div></main></body></html>
