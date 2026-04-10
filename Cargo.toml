@@ -3,6 +3,7 @@ name = "ktracepoint"
 authors = ["Linfeng Chen <chenlinfeng25@outlook.com>"]
 version = "0.1.0"
 edition = "2024"
+readme = "README.md"
 homepage = "https://github.com/Starry-OS/tracepoint"
 repository = "https://github.com/Starry-OS/tracepoint"
 
